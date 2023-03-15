@@ -8,6 +8,7 @@ __pycache__/
 env/
 venv/
 .env
+.dynamodb
 build/
 develop-eggs/
 dist/
