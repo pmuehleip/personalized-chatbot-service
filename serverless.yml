@@ -9,6 +9,7 @@ useDotenv: true
 custom:
   tableName: 'users-table-${sls:stage}'
   chatTableName: 'chat-table-${sls:stage}'
+  chatbotTableName: 'chatbot-table-${sls:stage}'
   wsgi:
     app: app.app
     pythonBin: python3
@@ -35,9 +36,11 @@ provider:
           Resource:
             - Fn::GetAtt: [ UsersTable, Arn ]
             - Fn::GetAtt: [ ChatTable, Arn ]
+            - Fn::GetAtt: [ ChatbotTable, Arn ]
   environment:
     USERS_TABLE: ${self:custom.tableName}
     CHAT_TABLE: ${self:custom.chatTableName}
+    CHATBOT_TABLE: ${self:custom.chatbotTableName}
     OPENAI_API_KEY: ${param:OPENAI_API_KEY}
 
 functions:
@@ -78,3 +81,16 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:custom.chatTableName}
+    ChatbotTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.chatbotTableName}

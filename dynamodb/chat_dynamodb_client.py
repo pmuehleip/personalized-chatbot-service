@@ -1,6 +1,6 @@
-from .dynamodb_client import DynamoDBClient
 import uuid
 from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
+from .dynamodb_client import DynamoDBClient
 
 class ChatDynamoDBClient:
     def __init__(self, table_name: str):

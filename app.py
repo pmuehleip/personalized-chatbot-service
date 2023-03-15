@@ -1,25 +1,31 @@
 import os
 
 import openai
-import boto3
-from flask import Flask, jsonify, make_response, request
-from chat_bot_service import ChatBotService
-from routes import init_routes
-from dynamodb_module.users_dynamodb_client import UsersDynamoDBClient
-from dynamodb_module.chat_dynamodb_client import ChatDynamoDBClient
+from flask import Flask
+from flask_cors import CORS
+from services import ChatbotService
+from routes import UsersRouter, ChatRouter, ChatbotRouter
+from dynamodb import UsersDynamoDBClient, ChatDynamoDBClient, ChatbotDynamoDBClient
 
 app = Flask(__name__)
+CORS(app, origins="*")
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 USERS_TABLE = os.environ['USERS_TABLE']
-CHAT_TABLE =  os.environ['CHAT_TABLE'] # TODO: We need to add env variable.
-users_dynamodb_client = UsersDynamoDBClient(table_name=USERS_TABLE)
-chat_dynamodb_client = ChatDynamoDBClient(table_name=CHAT_TABLE)
+CHAT_TABLE =  os.environ['CHAT_TABLE']
+CHATBOT_TABLE =  os.environ['CHATBOT_TABLE']
 
-chatBotService = ChatBotService(chat_dynamodb_client=chat_dynamodb_client)
+usersDynamoDBClient = UsersDynamoDBClient(table_name=USERS_TABLE)
+chatDynamoDBClient = ChatDynamoDBClient(table_name=CHAT_TABLE)
+chatbotDynamoDBClient = ChatbotDynamoDBClient(table_name=CHATBOT_TABLE)
 
-init_routes(app=app, users_dynamodb_client=users_dynamodb_client, chatBotService=chatBotService)
+chatbotService = ChatbotService(chatDynamoDBClient=chatDynamoDBClient, chatbotDynamoDBClient=chatbotDynamoDBClient, openaiClient=openai)
 
+usersRouter = UsersRouter(usersDynamoDBClient=usersDynamoDBClient)
+chatRouter = ChatRouter(chatbotService=chatbotService)
+chatbotRouter = ChatbotRouter(chatbotService=chatbotService)
 
-# TODO: Need to add Chat table to serverless.yml file.
+app.register_blueprint(usersRouter.blueprint)
+app.register_blueprint(chatRouter.blueprint)
+app.register_blueprint(chatbotRouter.blueprint)
