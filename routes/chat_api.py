@@ -38,4 +38,4 @@ class ChatRouter:
             if not messages:
                 messages = []
 
-            return jsonify(messages)
+            return jsonify({"messages": messages})
