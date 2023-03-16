@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request
 
 from services import ChatbotService
 
+def format_message(role: str, message: str):
+    return {"role": role, "content": message}
 
 class ChatRouter:
 
@@ -25,7 +27,7 @@ class ChatRouter:
                 return jsonify({'error': 'Please provide both a "message" and "chat_id"'}), 400
 
             bot_message = chatbotService.reply(chat_id=chat_id, message=message)
-            return jsonify({'bot_message': bot_message})
+            return jsonify(format_message(role="assistant", message=bot_message))
         
 
         @self.blueprint.route('/chat/<string:chat_id>', methods=['GET'])
