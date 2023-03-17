@@ -12,10 +12,12 @@ class ChatbotRouter:
         def create_chatbot():
             role = request.json.get('role')
             greeting = request.json.get('greeting')
-            if not role or not greeting:
-                return jsonify({'error': 'Please provide both "role" and "greeting"'}), 400
+            title = request.json.get('title')
+            description = request.json.get('description')
+            if not role or not greeting or not title:
+                return jsonify({'error': 'Please provide both "role" and "greeting" and "title"'}), 400
 
-            chatbot_id = chatbotService.create_chatbot(role=role, greeting=greeting)
+            chatbot_id = chatbotService.create_chatbot(role=role, greeting=greeting, title=title, description=description)
             return jsonify({'chatbot_id': chatbot_id})
         
         @self.blueprint.route('/chatbot/<string:chatbot_id>', methods=['GET'])

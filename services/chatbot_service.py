@@ -61,8 +61,8 @@ class ChatbotService:
     def get_chat(self, chat_id):
         return self.chatDynamoDBClient.get_chat(id=chat_id)
 
-    def create_chatbot(self, role: str, greeting: str):
-        return self.chatbotDynamoDBClient.create_chatbot(role=role, greeting=greeting)
+    def create_chatbot(self, role: str, greeting: str, title: str, description: str):
+        return self.chatbotDynamoDBClient.create_chatbot(role=role, greeting=greeting, title=title, description=description)
 
     def get_chatbot(self, chatbot_id: str):
         return self.chatbotDynamoDBClient.get_chatbot(id=chatbot_id)
