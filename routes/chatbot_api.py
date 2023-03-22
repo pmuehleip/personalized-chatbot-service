@@ -27,3 +27,21 @@ class ChatbotRouter:
                 return jsonify({'error': 'Could not get chatbot with provided "chatbot_id"'}), 404
             
             return jsonify(chatbot)
+        
+
+        @self.blueprint.route('/chatbot/<string:chatbot_id>', methods=['PUT'])
+        def update_chatbot(chatbot_id):
+            role = request.json.get('role')
+            greeting = request.json.get('greeting')
+            title = request.json.get('title')
+            description = request.json.get('description')
+
+            if not role and not greeting and not title and not description:
+                return jsonify({'error': 'Please provide at least one parameter to update'}), 400
+
+            chatbot = chatbotService.get_chatbot(chatbot_id)
+            if not chatbot:
+                return jsonify({'error': 'Could not get chatbot with provided "chatbot_id"'}), 404
+
+            chatbotService.update_chatbot(chatbot_id, role=role, greeting=greeting, title=title, description=description)
+            return jsonify({'message': 'Chatbot updated successfully'})

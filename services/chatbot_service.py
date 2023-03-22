@@ -66,3 +66,20 @@ class ChatbotService:
 
     def get_chatbot(self, chatbot_id: str):
         return self.chatbotDynamoDBClient.get_chatbot(id=chatbot_id)
+    
+    def update_chatbot(self, chatbot_id: str, role: str = None, greeting: str = None, title: str = None, description: str = None):
+        chatbot = self.chatbotDynamoDBClient.get_chatbot(id=chatbot_id)
+        if not chatbot:
+            raise ValueError(f"Chatbot with id '{chatbot_id}' not found") # What does this result in?
+
+        updated_chatbot = {}
+        if role:
+            updated_chatbot['role'] = role
+        if greeting:
+            updated_chatbot['greeting'] = greeting
+        if title:
+            updated_chatbot['title'] = title
+        if description:
+            updated_chatbot['description'] = description
+
+        self.chatbotDynamoDBClient.update_chatbot(id=chatbot_id, **updated_chatbot)
